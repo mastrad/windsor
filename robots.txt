@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /page-integrations
+Disallow: /coming-soon
+Disallow: /pageDefault
+Disallow: /benefits-of-taekwondo
+Disallow: /404
+Disallow: /page-not-found
+Disallow: /email-verification
+Sitemap: https://windsortaekwondo.com/sitemap.xml
+Sitemap: https://resources.windsortaekwondo.com/sitemap.xml

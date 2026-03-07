@@ -1,12 +1,21 @@
 import { NextResponse } from "next/server";
 import { ServerClient } from "postmark";
 
-const client = new ServerClient(process.env.POSTMARK_API_KEY);
-
 export async function POST(req) {
   try {
+    const apiKey = process.env.POSTMARK_API_KEY;
 
-    console.log("Postmark API Key:", process.env.POSTMARK_API_KEY);
+    // Safety check – fails fast with a clean message if the env var is missing
+    if (!apiKey) {
+      console.error("Missing POSTMARK_API_KEY environment variable");
+      return NextResponse.json(
+        { error: "Server configuration error" },
+        { status: 500 }
+      );
+    }
+
+    const client = new ServerClient(apiKey);
+
     const { name, email, subject, message } = await req.json();
 
     console.log("Received form data:", { name, email, subject, message });
@@ -19,7 +28,7 @@ export async function POST(req) {
     // Send email via Postmark
     const response = await client.sendEmail({
       From: "hello@windsortaekwondo.com", // Must match a verified sender in Postmark
-      To: "hello@windsortaekwondo.com", // Replace with your email
+      To: "hello@windsortaekwondo.com",
       Subject: `New Contact Form Submission: ${subject || "No Subject"}`,
       TextBody: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
     });

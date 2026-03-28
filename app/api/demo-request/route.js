@@ -16,6 +16,7 @@ export async function POST(request) {
     }
 
     const apiKey = process.env.POSTMARK_API_KEY;
+    console.log("Key length:", apiKey?.length, "| First 6 chars:", apiKey?.slice(0, 6));
 
     // Safety check – this is what was causing the 500
     if (!apiKey) {

@@ -207,6 +207,16 @@ export default function ContactModal() {
   useEffect(() => {
     closeContactModal();
   }, [pathname]);
+
+  // Google Ads conversion tracking
+  const gtagReportConversion = () => {
+    if (typeof gtag === "undefined") return;
+    gtag("event", "conversion", {
+      send_to: "AW-17082075995/WIW9CM7-37QbENuWr9E_",
+      value: 1.0,
+      currency: "GBP",
+    });
+  };
   
   return (
     <div
@@ -306,6 +316,7 @@ export default function ContactModal() {
                   <button
                     className="btn btn-primary btn-md text-white mt-2"
                     type="submit"
+                    onClick={gtagReportConversion}
                   >
                     Book free class
                   </button>

@@ -2,10 +2,42 @@
 import { ServerClient } from "postmark";
 import { NextResponse } from "next/server";
 
+// --- Add this helper ---
+async function verifyTurnstile(token, ip) {
+  const res = await fetch(
+    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        secret: process.env.TURNSTILE_SECRET_KEY,
+        response: token,
+        remoteip: ip, // optional but recommended
+      }),
+    }
+  );
+  const data = await res.json();
+  return data.success === true;
+}
+
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { name, dateOfBirth, email, phone, message } = body;
+    const { name, dateOfBirth, email, phone, message, turnstileToken } = body;
+
+    // --- Verify CAPTCHA first, before doing anything else ---
+    const ip =
+      request.headers.get("cf-connecting-ip") ||   // real IP on Cloudflare
+      request.headers.get("x-forwarded-for") ||
+      "unknown";
+
+    const isHuman = await verifyTurnstile(turnstileToken, ip);
+    if (!isHuman) {
+      return NextResponse.json(
+        { error: "CAPTCHA verification failed. Please try again." },
+        { status: 400 }
+      );
+    }
 
     // Validate required fields
     if (!name || !email || !phone || !dateOfBirth) {
@@ -16,9 +48,6 @@ export async function POST(request) {
     }
 
     const apiKey = process.env.POSTMARK_API_KEY;
-    console.log("Key length:", apiKey?.length, "| First 6 chars:", apiKey?.slice(0, 6));
-
-    // Safety check – this is what was causing the 500
     if (!apiKey) {
       console.error("Missing POSTMARK_API_KEY environment variable");
       return NextResponse.json(
@@ -29,7 +58,6 @@ export async function POST(request) {
 
     const client = new ServerClient(apiKey);
 
-    // Prepare email content
     const emailContent = `
       <h2>New Demo Request</h2>
       <p><strong>Name:</strong> ${name}</p>
@@ -39,23 +67,20 @@ export async function POST(request) {
       ${message ? `<p><strong>Message:</strong> ${message}</p>` : ""}
     `;
 
-    // Send the email using Postmark
     await client.sendEmail({
       From: process.env.FROM_EMAIL || "hello@windsortaekwondo.com",
       To: process.env.TO_EMAIL || "hello@windsortaekwondo.com",
-      Subject: `Free Trial Request from ${name}`, // fixed incomplete subject
+      Subject: `Free Trial Request from ${name}`,
       HtmlBody: emailContent,
       TextBody: emailContent.replace(/<[^>]*>/g, ""),
       ReplyTo: email,
     });
 
-    // Return success response
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error sending trial request:", error);
-    // Temporarily show the real error so we can debug
     return NextResponse.json(
-      { error: error.message || "Failed to send trial request. Please try again." },
+      { error: "Failed to send trial request. Please try again." },
       { status: 500 }
     );
   }

@@ -24,19 +24,18 @@ return NextResponse.json(
     }
 const client = new ServerClient(apiKey);
 // Prepare email content
-const emailContent = 
-      <h2>New Demo Request</h2>
-      <p><strong>Name:</strong> ${name}</p>
-      <p><strong>Phone:</strong> ${phone}</p>
-      <p><strong>Email:</strong> ${email}</p>
-${dateOfBirth ? <p><strong>Date of Birth:</strong> ${dateOfBirth}</p> : ""}
-${message ? <p><strong>Message:</strong> ${message}</p> : ""}
-    ;
+   const emailContent = `
+     <h2>New Demo Request</h2>
+     <p><strong>Name:</strong> ${name}</p>
+     <p><strong>Phone:</strong> ${phone}</p>
+     <p><strong>Email:</strong> ${email}</p>
+     ${dateOfBirth ? `<p><strong>Date of Birth:</strong> ${dateOfBirth}</p>` : ""}
+   `;
 // Send the email using Postmark
 await client.sendEmail({
       From: process.env.FROM_EMAIL || "hello@windsortaekwondo.com",
       To: process.env.TO_EMAIL || "hello@windsortaekwondo.com",
-      Subject: Free Trial Request from ${name}, // fixed incomplete subject
+      Subject: `Free Trial Request from ${name}`,// fixed incomplete subject
       HtmlBody: emailContent,
       TextBody: emailContent.replace(/<[^>]*>/g, ""),
       ReplyTo: email,

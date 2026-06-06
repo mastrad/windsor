@@ -3,7 +3,6 @@
 import { closeContactModal } from "@/utlis/toggleContactModal";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Turnstile } from "@marsidev/react-turnstile";
 
 export default function ContactModal() {
   const pathname = usePathname();

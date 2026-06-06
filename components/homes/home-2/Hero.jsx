@@ -186,8 +186,9 @@ export default function Hero() {
                     <div className="col-12 sm:col-auto">
                       <a
                         className="btn btn-md h-48px lg:h-56px w-100 sm:min-w-150px btn-primary text-white"
-                        onClick={openContactModal}
-                        role="button"
+                        href="https://forms.gle/PWJ7woQMhzQNgvkN9"
+                        target="_blank"
+                        rel="noopener noreferrer"
                       >
                         Try a free class
                       </a>

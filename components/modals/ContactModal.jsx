@@ -294,17 +294,9 @@ export default function ContactModal() {
                     </div>
                   )}
 
-                  <button
-                    className="btn btn-primary btn-md text-white mt-2"
-                    type="submit"
-                    disabled={(turnstileEnabled && !turnstileToken) || status === "Sending..."}
-                    onClick={gtagReportConversion}
-                  >
-                    Book free class
-                  </button>
                   {status && (
                     <p
-                      className="text-center mt-2"
+                      className="text-center mt-2 mb-2"
                       style={{
                         color:
                           status === "Thank you! Your free trial request has been received."
@@ -317,6 +309,14 @@ export default function ContactModal() {
                       {status}
                     </p>
                   )}
+                  <button
+                    className="btn btn-primary btn-md text-white mt-2"
+                    type="submit"
+                    disabled={(turnstileEnabled && !turnstileToken) || status === "Sending..."}
+                    onClick={gtagReportConversion}
+                  >
+                    Book free class
+                  </button>
                   <p className="fs-7 opacity-70 mt-2 text-center">
                     To get the most out of your free trial, tell us what's most important to you.
                   </p>

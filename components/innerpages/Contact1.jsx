@@ -129,16 +129,9 @@ export default function Contact1() {
                         />
                       </div>
                     )}
-                    <button
-                      className="btn btn-primary btn-md text-white mt-2"
-                      type="submit"
-                      disabled={(turnstileEnabled && !turnstileToken) || status === "Sending..."}
-                    >
-                      Send message
-                    </button>
                     {status && (
                         <p
-                            className="text-center mt-2"
+                            className="text-center mt-2 mb-2"
                             style={{
                             color:
                                 status === "Thank you! We have received your message."
@@ -151,6 +144,13 @@ export default function Contact1() {
                           {status}
                         </p>
                     )}
+                    <button
+                      className="btn btn-primary btn-md text-white mt-2"
+                      type="submit"
+                      disabled={(turnstileEnabled && !turnstileToken) || status === "Sending..."}
+                    >
+                      Send message
+                    </button>
                     <p className="text-center">
                       Or drop us a message via <a className="uc-link" href="mailto:hello@windsortaekwondo.com">email</a>.
                     </p>

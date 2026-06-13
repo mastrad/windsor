@@ -10,26 +10,34 @@ import { useEffect, useRef } from "react";
  *  - onVerify(token: string)  — called when the user passes the challenge
  *  - onExpire()               — called when the token expires (re-verify needed)
  *  - onError()                — called on a Turnstile error
+ *  - onUnavailable()          — called if the Turnstile script/widget never loads
+ *                                within `timeoutMs` (e.g. blocked by an ad-blocker)
  *  - theme                    — "light" | "dark" | "auto"  (default: "auto")
+ *  - timeoutMs                — how long to wait before treating the widget as
+ *                                unavailable (default: 10000)
  */
 export default function TurnstileWidget({
   onVerify,
   onExpire,
   onError,
+  onUnavailable,
   theme = "auto",
+  timeoutMs = 10000,
 }) {
   const containerRef = useRef(null);
   const widgetIdRef = useRef(null);
   const onVerifyRef = useRef(onVerify);
   const onExpireRef = useRef(onExpire);
   const onErrorRef = useRef(onError);
+  const onUnavailableRef = useRef(onUnavailable);
 
   // Keep the latest callbacks available without re-running the render effect below.
   useEffect(() => {
     onVerifyRef.current = onVerify;
     onExpireRef.current = onExpire;
     onErrorRef.current = onError;
-  }, [onVerify, onExpire, onError]);
+    onUnavailableRef.current = onUnavailable;
+  }, [onVerify, onExpire, onError, onUnavailable]);
 
   useEffect(() => {
     // Load the Turnstile script once
@@ -67,7 +75,17 @@ export default function TurnstileWidget({
       }
     }
 
+    // If the widget still hasn't rendered after `timeoutMs`, the script was
+    // likely blocked (e.g. by an ad-blocker/privacy extension). Let the
+    // parent know so it can show a fallback message.
+    const timeoutId = setTimeout(() => {
+      if (widgetIdRef.current === null) {
+        onUnavailableRef.current?.();
+      }
+    }, timeoutMs);
+
     return () => {
+      clearTimeout(timeoutId);
       if (widgetIdRef.current !== null && window.turnstile) {
         window.turnstile.remove(widgetIdRef.current);
         widgetIdRef.current = null;

@@ -22,6 +22,7 @@ export default function ContactModal() {
   const [dateInputFocused, setDateInputFocused] = useState(false);
   const [status, setStatus] = useState("");
   const [turnstileToken, setTurnstileToken] = useState(null);
+  const [turnstileUnavailable, setTurnstileUnavailable] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -282,7 +283,7 @@ export default function ContactModal() {
                     onChange={handleChange}
                   />
 
-                  {turnstileEnabled && (
+                  {turnstileEnabled && !turnstileUnavailable && (
                     <div className="flex justify-center mt-1">
                       <TurnstileWidget
                         onVerify={(token) => setTurnstileToken(token)}
@@ -291,8 +292,20 @@ export default function ContactModal() {
                           setTurnstileToken(null);
                           setStatus("Security check failed. Please refresh and try again.");
                         }}
+                        onUnavailable={() => setTurnstileUnavailable(true)}
                       />
                     </div>
+                  )}
+
+                  {turnstileUnavailable && (
+                    <p className="text-center mt-2 mb-1" style={{ color: "red" }}>
+                      We couldn't load the security check — it may be blocked by an
+                      ad-blocker or privacy extension. Please disable it and refresh
+                      the page, or email us directly at{" "}
+                      <a className="uc-link" href="mailto:hello@windsortaekwondo.com">
+                        hello@windsortaekwondo.com
+                      </a>.
+                    </p>
                   )}
 
                   {status && (
@@ -320,6 +333,12 @@ export default function ContactModal() {
                   </button>
                   <p className="fs-7 opacity-70 mt-2 text-center">
                     To get the most out of your free trial, tell us what's most important to you.
+                  </p>
+                  <p className="fs-7 text-center">
+                    Or drop us a message via{" "}
+                    <a className="uc-link" href="mailto:hello@windsortaekwondo.com">
+                      email
+                    </a>.
                   </p>
                 </form>
               </div>

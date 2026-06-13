@@ -14,6 +14,7 @@ export default function Contact1() {
   });
   const [status, setStatus] = useState(""); // Initial status is empty
   const [turnstileToken, setTurnstileToken] = useState(null);
+  const [turnstileUnavailable, setTurnstileUnavailable] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -117,7 +118,7 @@ export default function Contact1() {
                     </div>
                     <input className="form-control h-48px w-full" type="text" name="subject" placeholder="Reason for contact*" required value={formData.subject} onChange={handleChange} />
                     <textarea className="form-control min-h-150px w-full" name="message" placeholder="Your message..*" required value={formData.message} onChange={handleChange} />
-                    {turnstileEnabled && (
+                    {turnstileEnabled && !turnstileUnavailable && (
                       <div className="flex justify-center mt-1">
                         <TurnstileWidget
                           onVerify={(token) => setTurnstileToken(token)}
@@ -126,8 +127,19 @@ export default function Contact1() {
                             setTurnstileToken(null);
                             setStatus("Security check failed. Please refresh and try again.");
                           }}
+                          onUnavailable={() => setTurnstileUnavailable(true)}
                         />
                       </div>
+                    )}
+                    {turnstileUnavailable && (
+                      <p className="text-center mt-2 mb-1" style={{ color: "red" }}>
+                        We couldn't load the security check — it may be blocked by an
+                        ad-blocker or privacy extension. Please disable it and refresh
+                        the page, or email us directly at{" "}
+                        <a className="uc-link" href="mailto:hello@windsortaekwondo.com">
+                          hello@windsortaekwondo.com
+                        </a>.
+                      </p>
                     )}
                     {status && (
                         <p

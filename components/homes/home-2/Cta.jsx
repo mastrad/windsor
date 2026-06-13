@@ -89,9 +89,8 @@ export default function Cta() {
                 <div className="col-12 sm:col-auto flex justify-center">
                   <a
                     className="btn btn-md h-48px lg:h-56px w-100 sm:min-w-150px btn-primary text-white mx-auto"
-                    href="https://forms.gle/PWJ7woQMhzQNgvkN9"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    onClick={openContactModal}
+                    role="button"
                   >
                     Try a free class
                   </a>

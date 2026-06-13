@@ -18,7 +18,6 @@ export default function ContactModal() {
   });
   const [dateInputFocused, setDateInputFocused] = useState(false);
   const [status, setStatus] = useState("");
-  const [turnstileToken, setTurnstileToken] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -125,24 +124,18 @@ export default function ContactModal() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!turnstileToken) {
-      setStatus("Please wait for the security check to complete.");
-      return;
-    }
-
     setStatus("Sending...");
 
     try {
       const res = await fetch("/api/demo-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, turnstileToken }),
+        body: JSON.stringify(formData),
       });
 
       if (res.ok) {
         setStatus("Thank you! Your free trial request has been received.");
         setFormData({ name: "", dateOfBirth: "", email: "", phone: "", message: "" });
-        setTurnstileToken(null);
         setTimeout(() => {
           closeContactModal();
           setStatus("");
@@ -278,23 +271,10 @@ export default function ContactModal() {
                     onChange={handleChange}
                   />
 
-                  {/* Turnstile widget */}
-                  <div className="flex justify-center mt-1">
-                    <Turnstile
-                      siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-                      onSuccess={(token) => setTurnstileToken(token)}
-                      onExpire={() => setTurnstileToken(null)}
-                      onError={() => {
-                        setTurnstileToken(null);
-                        setStatus("Security check failed. Please refresh and try again.");
-                      }}
-                    />
-                  </div>
-
                   <button
                     className="btn btn-primary btn-md text-white mt-2"
                     type="submit"
-                    disabled={!turnstileToken || status === "Sending..."}
+                    disabled={status === "Sending..."}
                     onClick={gtagReportConversion}
                   >
                     Book free class

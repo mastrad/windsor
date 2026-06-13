@@ -69,7 +69,7 @@ export default function Footer1() {
             <div className="uc-footer-bottom panel vstack lg:hstack gap-4 justify-center lg:justify-between pt-4 lg:pt-6 border-top dark:text-white">
               <div className="vstack sm:hstack justify-center lg:justify-start items-center lg:items-start gap-1 lg:gap-2">
                 <p className="opacity-60">
-                  Powered by <a href="https://kwonway.com">KWONWAY</a>
+                  Powered by <a href="">Taekwondo Spirit</a>
                 </p>
                 <p className="opacity-60">
                   Windsor Taekwondo © {new Date().getFullYear()}. All rights reserved.

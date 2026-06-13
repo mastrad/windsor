@@ -97,9 +97,8 @@ export default function Header2() {
               </div>
               <a
                 className="btn btn-sm btn-primary text-white text-none d-none lg:d-inline-flex"
-                href="https://forms.gle/PWJ7woQMhzQNgvkN9"
-                target="_blank"
-                rel="noopener noreferrer"
+                onClick={openContactModal}
+                role="button"
               >
                 Try a free class
               </a>

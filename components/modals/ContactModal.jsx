@@ -331,10 +331,7 @@ export default function ContactModal() {
                   >
                     Book free class
                   </button>
-                  <p className="fs-7 opacity-70 mt-2 text-center">
-                    To get the most out of your free trial, tell us what's most important to you.
-                  </p>
-                  <p className="fs-7 text-center">
+                  <p className="fs-7 text-center mt-2">
                     Or drop us a message via{" "}
                     <a className="uc-link" href="mailto:hello@windsortaekwondo.com">
                       email

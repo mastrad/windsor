@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { ServerClient } from "postmark";
+import { getClientIp, getRateLimiter, verifyTurnstile } from "@/utlis/formSecurity";
+
+const ratelimit = getRateLimiter("contact", 3, "10 m");
 
 export async function POST(req) {
   try {
@@ -14,26 +17,41 @@ export async function POST(req) {
       );
     }
 
-    const client = new ServerClient(apiKey);
+    const ip = getClientIp(req);
+    if (ratelimit) {
+      const { success } = await ratelimit.limit(ip);
+      if (!success) {
+        return NextResponse.json(
+          { error: "Too many requests. Please try again later." },
+          { status: 429 }
+        );
+      }
+    }
 
-    const { name, email, subject, message } = await req.json();
-
-    console.log("Received form data:", { name, email, subject, message });
+    const { name, email, subject, message, turnstileToken } = await req.json();
 
     // Validate fields
     if (!name || !email || !message) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    if (!(await verifyTurnstile(turnstileToken, ip))) {
+      return NextResponse.json(
+        { error: "Human verification failed. Please try again." },
+        { status: 403 }
+      );
+    }
+
+    const client = new ServerClient(apiKey);
+
     // Send email via Postmark
-    const response = await client.sendEmail({
+    await client.sendEmail({
       From: "hello@windsortaekwondo.com", // Must match a verified sender in Postmark
       To: "hello@windsortaekwondo.com",
       Subject: `New Contact Form Submission: ${subject || "No Subject"}`,
       TextBody: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
+      ReplyTo: email,
     });
-
-    console.log("Postmark response:", response);
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

@@ -3,6 +3,9 @@
 import { closeContactModal } from "@/utlis/toggleContactModal";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import TurnstileWidget from "@/components/TurnstileWidget";
+
+const turnstileEnabled = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 export default function ContactModal() {
   const pathname = usePathname();
@@ -18,6 +21,7 @@ export default function ContactModal() {
   });
   const [dateInputFocused, setDateInputFocused] = useState(false);
   const [status, setStatus] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -124,18 +128,24 @@ export default function ContactModal() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (turnstileEnabled && !turnstileToken) {
+      setStatus("Please wait for the security check to complete.");
+      return;
+    }
+
     setStatus("Sending...");
 
     try {
       const res = await fetch("/api/demo-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, turnstileToken }),
       });
 
       if (res.ok) {
         setStatus("Thank you! Your free trial request has been received.");
         setFormData({ name: "", dateOfBirth: "", email: "", phone: "", message: "" });
+        setTurnstileToken(null);
         setTimeout(() => {
           closeContactModal();
           setStatus("");
@@ -271,10 +281,23 @@ export default function ContactModal() {
                     onChange={handleChange}
                   />
 
+                  {turnstileEnabled && (
+                    <div className="flex justify-center mt-1">
+                      <TurnstileWidget
+                        onVerify={(token) => setTurnstileToken(token)}
+                        onExpire={() => setTurnstileToken(null)}
+                        onError={() => {
+                          setTurnstileToken(null);
+                          setStatus("Security check failed. Please refresh and try again.");
+                        }}
+                      />
+                    </div>
+                  )}
+
                   <button
                     className="btn btn-primary btn-md text-white mt-2"
                     type="submit"
-                    disabled={status === "Sending..."}
+                    disabled={(turnstileEnabled && !turnstileToken) || status === "Sending..."}
                     onClick={gtagReportConversion}
                   >
                     Book free class

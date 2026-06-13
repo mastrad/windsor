@@ -1,6 +1,9 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import TurnstileWidget from "@/components/TurnstileWidget";
+
+const turnstileEnabled = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 export default function Contact1() {
   const [formData, setFormData] = useState({
@@ -10,6 +13,7 @@ export default function Contact1() {
     message: "",
   });
   const [status, setStatus] = useState(""); // Initial status is empty
+  const [turnstileToken, setTurnstileToken] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -17,19 +21,26 @@ export default function Contact1() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (turnstileEnabled && !turnstileToken) {
+      setStatus("Please wait for the security check to complete.");
+      return;
+    }
+
     setStatus("Sending...");
 
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, turnstileToken }),
       });
 
       if (res.ok) {
         // Success case
         setStatus("Thank you! We have received your message.");
         setFormData({ name: "", email: "", subject: "", message: "" }); // Clear form
+        setTurnstileToken(null);
       } else {
         // API returned an error (e.g., 400 or 500)
         const data = await res.json();
@@ -106,7 +117,25 @@ export default function Contact1() {
                     </div>
                     <input className="form-control h-48px w-full" type="text" name="subject" placeholder="Reason for contact*" required value={formData.subject} onChange={handleChange} />
                     <textarea className="form-control min-h-150px w-full" name="message" placeholder="Your message..*" required value={formData.message} onChange={handleChange} />
-                    <button className="btn btn-primary btn-md text-white mt-2" type="submit">Send message</button>
+                    {turnstileEnabled && (
+                      <div className="flex justify-center mt-1">
+                        <TurnstileWidget
+                          onVerify={(token) => setTurnstileToken(token)}
+                          onExpire={() => setTurnstileToken(null)}
+                          onError={() => {
+                            setTurnstileToken(null);
+                            setStatus("Security check failed. Please refresh and try again.");
+                          }}
+                        />
+                      </div>
+                    )}
+                    <button
+                      className="btn btn-primary btn-md text-white mt-2"
+                      type="submit"
+                      disabled={(turnstileEnabled && !turnstileToken) || status === "Sending..."}
+                    >
+                      Send message
+                    </button>
                     {status && (
                         <p
                             className="text-center mt-2"

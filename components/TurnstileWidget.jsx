@@ -20,6 +20,16 @@ export default function TurnstileWidget({
 }) {
   const containerRef = useRef(null);
   const widgetIdRef = useRef(null);
+  const onVerifyRef = useRef(onVerify);
+  const onExpireRef = useRef(onExpire);
+  const onErrorRef = useRef(onError);
+
+  // Keep the latest callbacks available without re-running the render effect below.
+  useEffect(() => {
+    onVerifyRef.current = onVerify;
+    onExpireRef.current = onExpire;
+    onErrorRef.current = onError;
+  }, [onVerify, onExpire, onError]);
 
   useEffect(() => {
     // Load the Turnstile script once
@@ -39,9 +49,9 @@ export default function TurnstileWidget({
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
         sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
         theme,
-        callback: (token) => onVerify?.(token),
-        "expired-callback": () => onExpire?.(),
-        "error-callback": () => onError?.(),
+        callback: (token) => onVerifyRef.current?.(token),
+        "expired-callback": () => onExpireRef.current?.(),
+        "error-callback": () => onErrorRef.current?.(),
       });
     }
 
@@ -63,7 +73,12 @@ export default function TurnstileWidget({
         widgetIdRef.current = null;
       }
     };
-  }, [theme, onVerify, onExpire, onError]);
+    // Only re-render the widget if the theme changes — NOT when the parent
+    // passes new inline onVerify/onExpire/onError functions on every re-render
+    // (e.g. after setTurnstileToken triggers a state update). Re-running this
+    // effect destroys and recreates the widget, which resets a checked
+    // checkbox back to unchecked.
+  }, [theme]);
 
   return <div ref={containerRef} />;
 }

@@ -12,7 +12,9 @@ import { useEffect, useRef } from "react";
  *  - onError()                — called on a Turnstile error
  *  - onUnavailable()          — called if the Turnstile script/widget never loads
  *                                within `timeoutMs` (e.g. blocked by an ad-blocker)
- *  - theme                    — "light" | "dark" | "auto"  (default: "auto")
+ *  - theme                    — "light" | "dark" | "auto"  (default: "light",
+ *                                since this site has no dark mode and the
+ *                                widget should not follow the OS theme)
  *  - timeoutMs                — how long to wait before treating the widget as
  *                                unavailable (default: 10000)
  */
@@ -21,7 +23,7 @@ export default function TurnstileWidget({
   onExpire,
   onError,
   onUnavailable,
-  theme = "auto",
+  theme = "light",
   timeoutMs = 10000,
 }) {
   const containerRef = useRef(null);

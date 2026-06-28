@@ -208,6 +208,7 @@ export default function ContactModal() {
       <div
         ref={elementRef}
         className="uc-modal-dialog lg:max-w-650px bg-secondary text-dark dark:bg-gray-800 dark:text-white rounded-1-5"
+        style={{ maxHeight: "90vh", overflowY: "auto" }}
         role="dialog"
         aria-modal="true"
       >

@@ -112,7 +112,7 @@ export default function TaekwondoMaidenheadPage() {
                 <h2 className="h3 lg:h2 m-0 text-center mb-6">
                   Classes Available in Maidenhead
                 </h2>
-                <div className="row child-cols-12 sm:child-cols-6 lg:child-cols-3 g-3">
+                <div className="row child-cols-12 sm:child-cols-6 lg:child-cols-4 justify-center g-3">
                   {[
                     {
                       title: "Kids Taekwondo (4+)",

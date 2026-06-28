@@ -44,7 +44,7 @@ export default function Features() {
                 Our classes are designed to be inclusive and welcoming, so everyone can join in the fun! <br />
               </p>
             </div>
-            <div className="row child-cols-12 sm:child-cols-6 xl:child-cols-4 col-match justify-center g-2 lg:g-4">
+            <div className="row child-cols-12 sm:child-cols-6 lg:child-cols-4 col-match justify-center g-2 lg:g-4">
               {features.map((feature, index) => (
                 <div key={index}>
                   <div

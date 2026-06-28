@@ -5,8 +5,6 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import TurnstileWidget from "@/components/TurnstileWidget";
 
-const turnstileEnabled = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-
 export default function ContactModal() {
   const pathname = usePathname();
   const elementRef = useRef(null);
@@ -22,7 +20,8 @@ export default function ContactModal() {
   const [dateInputFocused, setDateInputFocused] = useState(false);
   const [status, setStatus] = useState("");
   const [turnstileToken, setTurnstileToken] = useState(null);
-  const [turnstileUnavailable, setTurnstileUnavailable] = useState(false);
+  const [turnstileAvailable, setTurnstileAvailable] = useState(true);
+  const [turnstileKey, setTurnstileKey] = useState(0);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,6 +56,7 @@ export default function ContactModal() {
           dateInputRef.current.setSelectionRange(cursorPos, cursorPos);
         }
       }, 0);
+
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -80,20 +80,25 @@ export default function ContactModal() {
         const newPos = cursorPosition - 1;
         e.target.setSelectionRange(newPos, newPos);
 
-        const newValue =
-          dateOfBirth.substring(0, cursorPosition - 2) +
-          dateOfBirth.substring(cursorPosition);
+        const newValue = dateOfBirth.substring(0, cursorPosition - 2) +
+                        dateOfBirth.substring(cursorPosition);
 
         const digitsOnly = newValue.replace(/[^\d]/g, "");
 
         let formattedDate = "";
         if (digitsOnly.length > 0) {
           formattedDate = digitsOnly.substring(0, 2);
-          if (digitsOnly.length >= 2) formattedDate += "/";
+          if (digitsOnly.length >= 2) {
+            formattedDate += "/";
+          }
+
           if (digitsOnly.length > 2) {
             formattedDate += digitsOnly.substring(2, 4);
-            if (digitsOnly.length >= 4) formattedDate += "/";
+            if (digitsOnly.length >= 4) {
+              formattedDate += "/";
+            }
           }
+
           if (digitsOnly.length > 4) {
             formattedDate += digitsOnly.substring(4, 8);
           }
@@ -123,17 +128,16 @@ export default function ContactModal() {
     return digitsLength + 2;
   };
 
-  const handleDateFocus = () => setDateInputFocused(true);
-  const handleDateBlur = () => setDateInputFocused(false);
+  const handleDateFocus = () => {
+    setDateInputFocused(true);
+  };
+
+  const handleDateBlur = () => {
+    setDateInputFocused(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (turnstileEnabled && !turnstileToken) {
-      setStatus("Please wait for the security check to complete.");
-      return;
-    }
-
     setStatus("Sending...");
 
     try {
@@ -145,8 +149,15 @@ export default function ContactModal() {
 
       if (res.ok) {
         setStatus("Thank you! Your free trial request has been received.");
-        setFormData({ name: "", dateOfBirth: "", email: "", phone: "", message: "" });
+        setFormData({
+          name: "",
+          dateOfBirth: "",
+          email: "",
+          phone: "",
+          message: ""
+        });
         setTurnstileToken(null);
+        setTurnstileKey((k) => k + 1);
         setTimeout(() => {
           closeContactModal();
           setStatus("");
@@ -173,21 +184,17 @@ export default function ContactModal() {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   useEffect(() => {
     closeContactModal();
   }, [pathname]);
 
-  const gtagReportConversion = () => {
-    if (typeof gtag === "undefined") return;
-    gtag("event", "conversion", {
-      send_to: "AW-17082075995/WIW9CM7-37QbENuWr9E_",
-      value: 1.0,
-      currency: "GBP",
-    });
-  };
+  const canSubmit = !!turnstileToken || !turnstileAvailable;
 
   return (
     <div
@@ -201,7 +208,6 @@ export default function ContactModal() {
       <div
         ref={elementRef}
         className="uc-modal-dialog lg:max-w-650px bg-secondary text-dark dark:bg-gray-800 dark:text-white rounded-1-5"
-        style={{ maxHeight: "90vh", overflowY: "auto" }}
         role="dialog"
         aria-modal="true"
       >
@@ -217,7 +223,10 @@ export default function ContactModal() {
             <div className="panel vstack justify-center items-center gap-2 sm:gap-4 text-center">
               <h4 className="h5 lg:h4 m-0">Book your free trial class</h4>
               <div className="panel w-100 sm:w-350px md:w-500px mx-auto">
-                <form onSubmit={handleSubmit} className="vstack gap-2">
+                <form
+                  onSubmit={handleSubmit}
+                  className="vstack gap-2"
+                >
                   <div
                     className="vstack lg:hstack gap-2"
                     style={{ flexDirection: "row" }}
@@ -259,8 +268,8 @@ export default function ContactModal() {
                       value={formData.phone}
                       onChange={handleChange}
                     />
-                  </div>
-                  <div
+                 </div>
+                 <div
                     className="vstack lg:hstack gap-2"
                     style={{ flexDirection: "row" }}
                   >
@@ -282,35 +291,31 @@ export default function ContactModal() {
                     value={formData.message}
                     onChange={handleChange}
                   />
-
-                  {turnstileEnabled && !turnstileUnavailable && (
-                    <div className="flex justify-center mt-1">
-                      <TurnstileWidget
-                        onVerify={(token) => setTurnstileToken(token)}
-                        onExpire={() => setTurnstileToken(null)}
-                        onError={() => {
-                          setTurnstileToken(null);
-                          setStatus("Security check failed. Please refresh and try again.");
-                        }}
-                        onUnavailable={() => setTurnstileUnavailable(true)}
-                      />
-                    </div>
-                  )}
-
-                  {turnstileUnavailable && (
-                    <p className="text-center mt-2 mb-1" style={{ color: "red" }}>
-                      We couldn't load the security check — it may be blocked by an
-                      ad-blocker or privacy extension. Please disable it and refresh
-                      the page, or email us directly at{" "}
-                      <a className="uc-link" href="mailto:hello@windsortaekwondo.com">
-                        hello@windsortaekwondo.com
-                      </a>.
+                  <div className="d-flex justify-content-center mt-1">
+                    <TurnstileWidget
+                      key={turnstileKey}
+                      onVerify={(token) => setTurnstileToken(token)}
+                      onExpire={() => setTurnstileToken(null)}
+                      onError={() => setTurnstileToken(null)}
+                      onUnavailable={() => setTurnstileAvailable(false)}
+                      theme="light"
+                    />
+                  </div>
+                  {!turnstileAvailable && (
+                    <p className="fs-7 opacity-70 text-center">
+                      Security check unavailable. You can still submit the form.
                     </p>
                   )}
-
+                  <button
+                    className="btn btn-primary btn-md text-white mt-2"
+                    type="submit"
+                    disabled={!canSubmit}
+                  >
+                    Book free class
+                  </button>
                   {status && (
                     <p
-                      className="text-center mt-2 mb-2"
+                      className="text-center mt-2"
                       style={{
                         color:
                           status === "Thank you! Your free trial request has been received."
@@ -323,19 +328,8 @@ export default function ContactModal() {
                       {status}
                     </p>
                   )}
-                  <button
-                    className="btn btn-primary btn-md text-white mt-2"
-                    type="submit"
-                    disabled={(turnstileEnabled && !turnstileToken) || status === "Sending..."}
-                    onClick={gtagReportConversion}
-                  >
-                    Book free class
-                  </button>
-                  <p className="fs-7 text-center mt-2">
-                    Or drop us a message via{" "}
-                    <a className="uc-link" href="mailto:hello@windsortaekwondo.com">
-                      email
-                    </a>.
+                  <p className="fs-7 opacity-70 mt-2 text-center">
+                    To get the most out of your free trial, tell us what's most important to you.
                   </p>
                 </form>
               </div>

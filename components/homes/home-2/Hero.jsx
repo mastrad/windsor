@@ -165,11 +165,11 @@ export default function Hero() {
                     FREE uniform for new members
                   </span>
                   <h1 className="h2 sm:h1 lg:display-6 xl:display-5 mb-1 xl:mb-2">
-                    Start your Taekwondo journey
+                    Taekwondo Classes in Windsor &amp; Maidenhead
                   </h1>
                   <p className="fs-6 sm:fs-5 text-dark dark:text-white text-opacity-70">
                     Ladies-only, kids, adults, and mixed classes.<br />
-                    Try a free class today! Friends & family are welcome!
+                    Try a free class today — friends &amp; family are welcome!
                   </p>
                   <form
                     onSubmit={(e) => e.preventDefault()}

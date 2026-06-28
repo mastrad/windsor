@@ -1,61 +1,67 @@
 import { NextResponse } from "next/server";
 import { ServerClient } from "postmark";
-import { getClientIp, getRateLimiter, verifyTurnstile } from "@/utlis/formSecurity";
 
-const ratelimit = getRateLimiter("contact", 3, "10 m");
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+async function verifyTurnstile(token) {
+  if (!token) return false;
+  try {
+    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        secret: process.env.TURNSTILE_SECRET_KEY,
+        response: token,
+      }),
+    });
+    const data = await res.json();
+    return data.success === true;
+  } catch {
+    return false;
+  }
+}
 
 export async function POST(req) {
   try {
-    const apiKey = process.env.POSTMARK_API_KEY;
-
-    // Safety check – fails fast with a clean message if the env var is missing
-    if (!apiKey) {
-      console.error("Missing POSTMARK_API_KEY environment variable");
-      return NextResponse.json(
-        { error: "Server configuration error" },
-        { status: 500 }
-      );
-    }
-
-    const ip = getClientIp(req);
-    if (ratelimit) {
-      const { success } = await ratelimit.limit(ip);
-      if (!success) {
-        return NextResponse.json(
-          { error: "Too many requests. Please try again later." },
-          { status: 429 }
-        );
-      }
-    }
-
+    const client = new ServerClient(process.env.POSTMARK_API_KEY);
     const { name, email, subject, message, turnstileToken } = await req.json();
 
-    // Validate fields
     if (!name || !email || !message) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    if (!(await verifyTurnstile(turnstileToken, ip))) {
+    const turnstileOk = await verifyTurnstile(turnstileToken);
+    if (!turnstileOk) {
       return NextResponse.json(
-        { error: "Human verification failed. Please try again." },
-        { status: 403 }
+        { error: "Security check failed. Please refresh and try again." },
+        { status: 400 }
       );
     }
 
-    const client = new ServerClient(apiKey);
+    const safeName = escapeHtml(name);
+    const safeEmail = escapeHtml(email);
+    const safeSubject = escapeHtml(subject);
+    const safeMessage = escapeHtml(message);
 
-    // Send email via Postmark
     await client.sendEmail({
-      From: "hello@windsortaekwondo.com", // Must match a verified sender in Postmark
+      From: "hello@windsortaekwondo.com",
       To: "hello@windsortaekwondo.com",
-      Subject: `New Contact Form Submission: ${subject || "No Subject"}`,
+      Subject: `New Contact Form Submission: ${safeSubject || "No Subject"}`,
+      HtmlBody: `<p><strong>Name:</strong> ${safeName}</p><p><strong>Email:</strong> ${safeEmail}</p><p><strong>Message:</strong> ${safeMessage}</p>`,
       TextBody: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
       ReplyTo: email,
     });
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
-    console.error("Error sending email:", error);
     return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
   }
 }

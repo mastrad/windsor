@@ -5,17 +5,16 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start -p $PORT",
+    "start": "next start -p ${PORT:-3001}",
     "lint": "next lint"
   },
   "dependencies": {
-    "@upstash/ratelimit": "^2.0.8",
-    "@upstash/redis": "^1.38.0",
     "animejs": "^3.2.2",
     "imagesloaded": "^5.0.0",
     "isotope-layout": "^3.0.6",
+    "jsonwebtoken": "^9.0.2",
     "marked": "^15.0.7",
-    "next": "^16.2.6",
+    "next": "^15.1.7",
     "photoswipe": "^5.4.4",
     "postmark": "^4.0.5",
     "rc-slider": "^11.1.5",
@@ -26,6 +25,6 @@
     "react-scroll-parallax": "^3.4.5",
     "react-type-animation": "^3.2.0",
     "sass": "^1.83.4",
-    "swiper": "^12.2.0"
+    "swiper": "^11.2.2"
   }
 }

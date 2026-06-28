@@ -11,11 +11,39 @@ import Team from "@/components/homes/home-1/Team";
 import Cta from "@/components/homes/home-2/Cta";
 export const metadata = {
     title:
-      "About - Windsor Taekwondo || Kids & Ladies-only Martial Arts Maidenhead",
+      "About Windsor Taekwondo | Kids & Ladies-Only Martial Arts in Maidenhead",
     description:
-      "Windsor Taekwondo offers kids taekwondo in Maidenhead and Windsor, plus ladies-only martial arts classes. Train with expert instructors in a welcoming, family-friendly environment.",
+      "Windsor Taekwondo offers kids taekwondo in Maidenhead and Windsor, plus ladies-only martial arts classes taught by female instructors. Welcoming, family-friendly environment.",
     keywords:
-      "Windsor Taekwondo, Windsor Taekwondo, Maidenhead Taekwondo, kids taekwondo Maidenhead, kids taekwondo Windsor, kids martial arts Maidenhead, kids martial arts Windsor, ladies-only taekwondo Windsor, ladies-only taekwondo Maidenhead, ladies only martial arts Maidenhead, ladies only martial arts Windsor, martial arts Windsor, martial arts Maidenhead, taekwondo classes Windsor, taekwondo classes Maidenhead, kids self defence Windsor, kids self defence Maidenhead, female martial arts instructors Windsor, female martial arts instructors Maidenhead",
+      "Windsor Taekwondo, Maidenhead Taekwondo, kids taekwondo Maidenhead, kids taekwondo Windsor, kids martial arts Maidenhead, kids martial arts Windsor, ladies-only taekwondo Windsor, ladies-only taekwondo Maidenhead, ladies only martial arts Maidenhead, ladies only martial arts Windsor, martial arts Windsor, martial arts Maidenhead, female martial arts instructors Maidenhead",
+    openGraph: {
+      title: "About Windsor Taekwondo | Kids & Ladies-Only Martial Arts in Maidenhead",
+      description:
+        "Windsor Taekwondo offers kids taekwondo in Maidenhead and Windsor, plus ladies-only martial arts classes taught by female instructors.",
+      url: "https://windsortaekwondo.com/about",
+      siteName: "Windsor Taekwondo",
+      images: [
+        {
+          url: "https://windsortaekwondo.com/assets/images/template/hero-about-02.webp",
+          width: 1000,
+          height: 667,
+          alt: "Windsor Taekwondo club, about us",
+        },
+      ],
+      type: "website",
+      locale: "en_GB",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "About Windsor Taekwondo | Kids & Ladies-Only Martial Arts in Maidenhead",
+      description:
+        "Windsor Taekwondo offers kids taekwondo in Maidenhead and Windsor, plus ladies-only martial arts classes taught by female instructors.",
+      images: ["https://windsortaekwondo.com/assets/images/template/hero-about-02.webp"],
+      site: "@WindsorTKD",
+    },
+    alternates: {
+      canonical: "https://windsortaekwondo.com/about",
+    },
   };
 export default function AboutPage() {
   return (

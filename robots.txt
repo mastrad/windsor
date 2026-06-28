@@ -1,8 +1,8 @@
 User-agent: *
+Disallow: /benefits-of-taekwondo
 Disallow: /page-integrations
 Disallow: /coming-soon
 Disallow: /pageDefault
-Disallow: /benefits-of-taekwondo
 Disallow: /404
 Disallow: /page-not-found
 Disallow: /email-verification

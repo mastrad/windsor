@@ -8,11 +8,39 @@ import ScrollingLogos from "@/components/homes/home-2/ScrollingLogos"; //
 import Blogs from "@/components/homes/home-2/Blogs";
 export const metadata = {
     title:
-      "Windsor Taekwondo || Taekwondo Martial Arts Classes in Windsor and Maidenhead.",
+      "Contact Windsor Taekwondo | Book a Free Trial Class in Maidenhead & Windsor",
     description:
-      "Windsor Taekwondo is a martial arts school in Windsor and Maidenhead, offering classes for all ages and abilities. Join us to learn self-defense, improve fitness, and gain confidence.",
+      "Get in touch with Windsor Taekwondo to book your free trial class. We offer taekwondo and martial arts classes in Maidenhead and Windsor for kids, adults, and ladies-only groups.",
     keywords:
-      "Windsor Taekwondo, martial arts, taekwondo classes, self-defense, fitness, confidence, Windsor, Maidenhead",
+      "contact Windsor Taekwondo, book taekwondo class, free trial taekwondo Maidenhead, taekwondo Windsor contact, martial arts class booking Maidenhead",
+    openGraph: {
+      title: "Contact Windsor Taekwondo | Book a Free Trial Class",
+      description:
+        "Get in touch to book your free trial taekwondo class in Maidenhead or Windsor. Kids, adults, and ladies-only groups welcome.",
+      url: "https://windsortaekwondo.com/contact",
+      siteName: "Windsor Taekwondo",
+      images: [
+        {
+          url: "https://windsortaekwondo.com/assets/images/template/hero-contact.jpg",
+          width: 1500,
+          height: 1000,
+          alt: "Contact Windsor Taekwondo",
+        },
+      ],
+      type: "website",
+      locale: "en_GB",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Contact Windsor Taekwondo | Book a Free Trial Class",
+      description:
+        "Get in touch to book your free trial taekwondo class in Maidenhead or Windsor. Kids, adults, and ladies-only groups welcome.",
+      images: ["https://windsortaekwondo.com/assets/images/template/hero-contact.jpg"],
+      site: "@WindsorTKD",
+    },
+    alternates: {
+      canonical: "https://windsortaekwondo.com/contact",
+    },
   };
 export default function ContactPage() {
   return (

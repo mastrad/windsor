@@ -2,9 +2,26 @@ import Accordion from "@/components/common/Accordion";
 import { accordionItems } from "@/data/faq";
 import React from "react";
 
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": accordionItems.map((item) => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": item.answer,
+    },
+  })),
+};
+
 export default function Faq() {
   return (
     <div id="faq" className="section panel overflow-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <div className="section-outer panel pb-6 xl:pb-9">
         <div className="container max-w-lg">
           <div

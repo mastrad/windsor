@@ -38,6 +38,30 @@ export const accordionItems = [
     controls: "uc-accordion-32",
     expanded: false,
   },
+  {
+    id: 6,
+    question: "Where are your taekwondo classes held?",
+    answer:
+      "Our classes are held at 4 Marlow Rd, Maidenhead SL6 7YR. We are conveniently located for residents of Maidenhead, Windsor, Slough, Taplow, Cookham, and the surrounding areas.",
+    controls: "uc-accordion-34",
+    expanded: false,
+  },
+  {
+    id: 7,
+    question: "Do you offer ladies-only taekwondo classes in Maidenhead?",
+    answer:
+      "Yes! We offer ladies-only taekwondo classes in Maidenhead, taught exclusively by experienced, fully insured female instructors registered with British Taekwondo and Kukkiwon. These classes are open to women of all ages and fitness levels — complete beginners are very welcome.",
+    controls: "uc-accordion-36",
+    expanded: false,
+  },
+  {
+    id: 8,
+    question: "What are your class times?",
+    answer:
+      "Our taekwondo classes in Maidenhead run on Tuesdays 17:15–18:15, Fridays 19:45–20:45, and Saturdays 11:00–12:00. Get in touch and we will help you find the right class for your schedule.",
+    controls: "uc-accordion-38",
+    expanded: false,
+  },
 ];
 
 export const accordionItems2 = [

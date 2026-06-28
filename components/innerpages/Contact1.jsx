@@ -3,8 +3,6 @@ import { useState } from "react";
 import Image from "next/image";
 import TurnstileWidget from "@/components/TurnstileWidget";
 
-const turnstileEnabled = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-
 export default function Contact1() {
   const [formData, setFormData] = useState({
     name: "",
@@ -12,9 +10,10 @@ export default function Contact1() {
     subject: "",
     message: "",
   });
-  const [status, setStatus] = useState(""); // Initial status is empty
+  const [status, setStatus] = useState("");
   const [turnstileToken, setTurnstileToken] = useState(null);
-  const [turnstileUnavailable, setTurnstileUnavailable] = useState(false);
+  const [turnstileAvailable, setTurnstileAvailable] = useState(true);
+  const [turnstileKey, setTurnstileKey] = useState(0);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,12 +21,6 @@ export default function Contact1() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (turnstileEnabled && !turnstileToken) {
-      setStatus("Please wait for the security check to complete.");
-      return;
-    }
-
     setStatus("Sending...");
 
     try {
@@ -38,20 +31,20 @@ export default function Contact1() {
       });
 
       if (res.ok) {
-        // Success case
         setStatus("Thank you! We have received your message.");
-        setFormData({ name: "", email: "", subject: "", message: "" }); // Clear form
+        setFormData({ name: "", email: "", subject: "", message: "" });
         setTurnstileToken(null);
+        setTurnstileKey((k) => k + 1);
       } else {
-        // API returned an error (e.g., 400 or 500)
         const data = await res.json();
         setStatus(data.error || "Error sending message. Please try again.");
       }
     } catch (error) {
-      // Network or fetch error
       setStatus("Error sending message. Please try again.");
     }
   };
+
+  const canSubmit = !!turnstileToken || !turnstileAvailable;
 
   return (
     <div id="hero_header" className="hero-header section panel overflow-hidden">
@@ -88,7 +81,7 @@ export default function Contact1() {
                       <div className="panel z-1">
                         <div className="vstack gap-3">
                           <p className="fs-5 xl:fs-4 fw-medium">
-                            “Great teacher, great knowledge - very engaging and fun class!”
+                            "Great teacher, great knowledge - very engaging and fun class!"
                           </p>
                           <div className="vstack gap-0">
                             <p className="fs-6 lg:fs-5 fw-medium">
@@ -118,32 +111,25 @@ export default function Contact1() {
                     </div>
                     <input className="form-control h-48px w-full" type="text" name="subject" placeholder="Reason for contact*" required value={formData.subject} onChange={handleChange} />
                     <textarea className="form-control min-h-150px w-full" name="message" placeholder="Your message..*" required value={formData.message} onChange={handleChange} />
-                    {turnstileEnabled && !turnstileUnavailable && (
-                      <div className="flex justify-center mt-1">
-                        <TurnstileWidget
-                          onVerify={(token) => setTurnstileToken(token)}
-                          onExpire={() => setTurnstileToken(null)}
-                          onError={() => {
-                            setTurnstileToken(null);
-                            setStatus("Security check failed. Please refresh and try again.");
-                          }}
-                          onUnavailable={() => setTurnstileUnavailable(true)}
-                        />
-                      </div>
-                    )}
-                    {turnstileUnavailable && (
-                      <p className="text-center mt-2 mb-1" style={{ color: "red" }}>
-                        We couldn't load the security check — it may be blocked by an
-                        ad-blocker or privacy extension. Please disable it and refresh
-                        the page, or email us directly at{" "}
-                        <a className="uc-link" href="mailto:hello@windsortaekwondo.com">
-                          hello@windsortaekwondo.com
-                        </a>.
+                    <div className="d-flex justify-content-center mt-1">
+                      <TurnstileWidget
+                        key={turnstileKey}
+                        onVerify={(token) => setTurnstileToken(token)}
+                        onExpire={() => setTurnstileToken(null)}
+                        onError={() => setTurnstileToken(null)}
+                        onUnavailable={() => setTurnstileAvailable(false)}
+                        theme="light"
+                      />
+                    </div>
+                    {!turnstileAvailable && (
+                      <p className="fs-7 opacity-70 text-center">
+                        Security check unavailable. You can still submit the form.
                       </p>
                     )}
+                    <button className="btn btn-primary btn-md text-white mt-2" type="submit" disabled={!canSubmit}>Send message</button>
                     {status && (
                         <p
-                            className="text-center mt-2 mb-2"
+                            className="text-center mt-2"
                             style={{
                             color:
                                 status === "Thank you! We have received your message."
@@ -156,13 +142,6 @@ export default function Contact1() {
                           {status}
                         </p>
                     )}
-                    <button
-                      className="btn btn-primary btn-md text-white mt-2"
-                      type="submit"
-                      disabled={(turnstileEnabled && !turnstileToken) || status === "Sending..."}
-                    >
-                      Send message
-                    </button>
                     <p className="text-center">
                       Or drop us a message via <a className="uc-link" href="mailto:hello@windsortaekwondo.com">email</a>.
                     </p>

@@ -4,6 +4,7 @@ export const footerLinks = [
       { href: "https://resources.windsortaekwondo.com", label: "Resources" },
       { href: "/about", label: "About" },
       { href: "/contact", label: "Contact" },
+      { href: "/privacy", label: "Privacy Policy" },
     ],
   },
   {

@@ -25,6 +25,7 @@ export default function RootLayout({ children }) {
   
   useEffect(() => {
     const elements = document.querySelectorAll("[data-anime]");
+    // Intersection Observer callback function
     const handleIntersection = (entries, observer) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -54,12 +55,15 @@ export default function RootLayout({ children }) {
             } else {
               targets = element?.querySelectorAll(animeSettings.targets);
             }
+            // console.log(animeSettings);
+            // Apply Anime.js animation
             anime({
               loop: animeSettings.loop ? true : false,
               targets: targets,
               translateX: JSON.parse(animeSettings.translateX || "[0, 0]"),
               translateY: JSON.parse(animeSettings.translateY || "[48, 0]"),
               opacity: [0, 1],
+              // direction: "alternate",
               easing: animeSettings.easing || "spring(1, 80, 10, 0)",
               duration: Number(animeSettings.duration) || 450,
               delay: animeSettings.delay
@@ -70,18 +74,20 @@ export default function RootLayout({ children }) {
                   : animeSettings.delay / 1
                 : 0,
             });
+            // Unobserve the element after animation triggers
             observer.unobserve(element);
           }
         }
       });
     };
     const observer = new IntersectionObserver(handleIntersection, {
-      threshold: 0,
+      threshold: 0, // Trigger when 10% of the element is in view
     });
     elements.forEach((element) => {
       observer.observe(element);
     });
     return () => {
+      // Clean up the observer on component unmount
       elements.forEach((element) => {
         observer.unobserve(element);
       });
@@ -91,6 +97,58 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" dir="ltr">
       <head>
+        {/* SportsClub / LocalBusiness structured data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SportsClub",
+              "name": "Windsor Taekwondo",
+              "description": "Windsor Taekwondo is a martial arts school offering taekwondo classes for kids, adults, and ladies-only groups in Maidenhead and Windsor.",
+              "url": "https://windsortaekwondo.com",
+              "email": "hello@windsortaekwondo.com",
+              "sport": "Taekwondo",
+              "image": "https://windsortaekwondo.com/assets/images/template/hero-two.png",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "4 Marlow Rd",
+                "addressLocality": "Maidenhead",
+                "postalCode": "SL6 7YR",
+                "addressCountry": "GB"
+              },
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": 51.5228,
+                "longitude": -0.7178
+              },
+              "openingHoursSpecification": [
+                {
+                  "@type": "OpeningHoursSpecification",
+                  "dayOfWeek": "Tuesday",
+                  "opens": "17:15",
+                  "closes": "18:15"
+                },
+                {
+                  "@type": "OpeningHoursSpecification",
+                  "dayOfWeek": "Friday",
+                  "opens": "19:45",
+                  "closes": "20:45"
+                },
+                {
+                  "@type": "OpeningHoursSpecification",
+                  "dayOfWeek": "Saturday",
+                  "opens": "11:00",
+                  "closes": "12:00"
+                }
+              ],
+              "sameAs": [
+                "https://x.com/WindsorTKD",
+                "https://instagram.com/windsortaekwondo"
+              ]
+            })
+          }}
+        />
         {/* Google Tag Manager */}
         {process.env.NEXT_PUBLIC_GTM_ID && (
           <Script
@@ -107,20 +165,6 @@ export default function RootLayout({ children }) {
             }}
           />
         )}
-
-        {/* Google Ads Tag */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=AW-17082075995"
-          strategy="afterInteractive"
-        />
-        <Script id="google-ads" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'AW-17082075995');
-          `}
-        </Script>
       </head>
       <body>
         {/* Google Tag Manager (noscript) */}

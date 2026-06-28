@@ -25,9 +25,16 @@ export default function Footer1() {
                         />
                       </Link>
                       <p>
-                        Windsor Taekwondo in Windsor & Maidenhead is a family-friendly 
+                        Windsor Taekwondo in Windsor & Maidenhead is a family-friendly
                         martial arts school with ladies/girls-only, kids and adults classes.
                       </p>
+                      <address className="not-italic fs-7 opacity-70 vstack gap-narrow">
+                        <span>4 Marlow Rd, Maidenhead SL6 7YR</span>
+                        <a href="mailto:hello@windsortaekwondo.com" className="hover:opacity-100 transition-opacity">
+                          hello@windsortaekwondo.com
+                        </a>
+                        <span>Tue 17:15–18:15 &bull; Fri 19:45–20:45 &bull; Sat 11:00–12:00</span>
+                      </address>
                     </div>
                     {/* <div className="hstack items-start gap-1">
                       <a href="#">
@@ -69,7 +76,7 @@ export default function Footer1() {
             <div className="uc-footer-bottom panel vstack lg:hstack gap-4 justify-center lg:justify-between pt-4 lg:pt-6 border-top dark:text-white">
               <div className="vstack sm:hstack justify-center lg:justify-start items-center lg:items-start gap-1 lg:gap-2">
                 <p className="opacity-60">
-                  Powered by <a href="">Taekwondo Spirit</a>
+                  Powered by <a href="https://kwonway.com">KWONWAY</a>
                 </p>
                 <p className="opacity-60">
                   Windsor Taekwondo © {new Date().getFullYear()}. All rights reserved.

@@ -6,6 +6,13 @@ export const footerLinks = [
       { href: "/contact", label: "Contact" },
     ],
   },
+  {
+    links: [
+      { href: "/maidenhead-taekwondo", label: "Taekwondo in Maidenhead" },
+      { href: "/windsor-taekwondo", label: "Taekwondo near Windsor" },
+      { href: "/maidenhead-ladies-taekwondo", label: "Ladies-Only Classes" },
+    ],
+  },
   /*{
     links: [
       { href: "/shop", label: "Shop" },

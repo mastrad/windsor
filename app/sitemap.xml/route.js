@@ -39,6 +39,24 @@ export async function GET() {
       <changefreq>monthly</changefreq>
       <priority>0.7</priority>
     </url>
+    <url>
+      <loc>https://windsortaekwondo.com/maidenhead-taekwondo</loc>
+      <lastmod>2026-06-28</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.9</priority>
+    </url>
+    <url>
+      <loc>https://windsortaekwondo.com/windsor-taekwondo</loc>
+      <lastmod>2026-06-28</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.9</priority>
+    </url>
+    <url>
+      <loc>https://windsortaekwondo.com/maidenhead-ladies-taekwondo</loc>
+      <lastmod>2026-06-28</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.9</priority>
+    </url>
   </urlset>`;
   
     // Return the XML with proper headers

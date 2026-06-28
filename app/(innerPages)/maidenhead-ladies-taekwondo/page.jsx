@@ -2,6 +2,7 @@ import Header2 from "@/components/headers/Header2";
 import Footer1 from "@/components/footers/Footer1";
 import Cta from "@/components/homes/home-2/Cta";
 import Link from "next/link";
+import BookingButton from "@/components/common/BookingButton";
 
 export const metadata = {
   title: "Ladies-Only Taekwondo Classes in Maidenhead & Windsor | Windsor Taekwondo",
@@ -55,15 +56,12 @@ export default function LadiesTaekwondoMaidenheadPage() {
                     Ladies-Only Taekwondo Classes in Maidenhead &amp; Windsor
                   </h1>
                   <p className="fs-6 sm:fs-5 text-dark dark:text-white text-opacity-70 max-w-650px">
-                    A safe, welcoming space for women of all ages and fitness levels — taught exclusively by experienced female instructors. No experience necessary.
+                    A safe, welcoming space for women of all ages and fitness levels, taught exclusively by experienced female instructors. No experience necessary.
                   </p>
                   <div className="hstack gap-2 flex-wrap justify-center">
-                    <Link
-                      href="/contact"
-                      className="btn btn-md h-48px lg:h-56px btn-primary text-white"
-                    >
+                    <BookingButton className="btn btn-md h-48px lg:h-56px btn-primary text-white">
                       Book a free class
-                    </Link>
+                    </BookingButton>
                     <Link
                       href="/about"
                       className="btn btn-md h-48px lg:h-56px btn-secondary dark:btn-outline-white"
@@ -72,7 +70,7 @@ export default function LadiesTaekwondoMaidenheadPage() {
                     </Link>
                   </div>
                   <p className="fs-7 text-dark dark:text-white text-opacity-70">
-                    Free trial class — no payment or uniform required.
+                    No payment or uniform required.
                   </p>
                 </div>
               </div>
@@ -94,7 +92,7 @@ export default function LadiesTaekwondoMaidenheadPage() {
                       Windsor Taekwondo&apos;s <strong>ladies-only taekwondo classes in Maidenhead</strong> are designed to give women a space where they can train freely, build confidence, and learn effective self-defence without the pressure of a mixed environment. Whether you&apos;re brand new to martial arts or returning after a break, you&apos;re welcome here.
                     </p>
                     <p>
-                      Our <strong>ladies-only martial arts classes in Maidenhead</strong> are led exclusively by experienced, fully insured female instructors registered with British Taekwondo, World Taekwondo, and Kukkiwon — the global governing bodies of the sport. You&apos;ll be training with some of the most qualified <strong>female martial arts instructors</strong> in the Windsor and Maidenhead area.
+                      Our <strong>ladies-only martial arts classes in Maidenhead</strong> are led exclusively by experienced, fully insured female instructors registered with British Taekwondo, World Taekwondo, and Kukkiwon, the global governing bodies of the sport. You&apos;ll be training with some of the most qualified <strong>female martial arts instructors</strong> in the Windsor and Maidenhead area.
                     </p>
                     <p>
                       Classes are open to women of all ages, backgrounds, and fitness levels. Whether your goal is fitness, self-defence, stress relief, or simply trying something new, we have a class for you.
@@ -118,7 +116,7 @@ export default function LadiesTaekwondoMaidenheadPage() {
                   {[
                     {
                       title: "Self-Defence Skills",
-                      desc: "Learn practical, effective techniques you can use in real-life situations — taught in a calm, supportive environment.",
+                      desc: "Learn practical, effective techniques you can use in real-life situations, taught in a calm, supportive environment.",
                     },
                     {
                       title: "Fitness & Strength",
@@ -162,7 +160,7 @@ export default function LadiesTaekwondoMaidenheadPage() {
                 <div className="panel vstack gap-4 max-w-650px mx-auto text-center">
                   <h2 className="h3 lg:h2 m-0">Class Times</h2>
                   <p className="fs-6 lg:fs-5 text-dark dark:text-white text-opacity-70">
-                    Our classes are held at <strong>4 Marlow Rd, Maidenhead SL6 7YR</strong> — easily accessible from Windsor, Taplow, Cookham, and the surrounding areas.
+                    Our classes are held at <strong>4 Marlow Rd, Maidenhead SL6 7YR</strong>, easily accessible from Windsor, Taplow, Cookham, and the surrounding areas.
                   </p>
                   <div className="panel rounded-2 bg-secondary dark:bg-gray-800 p-4 sm:p-6">
                     <ul className="vstack gap-3 text-start">
@@ -180,9 +178,9 @@ export default function LadiesTaekwondoMaidenheadPage() {
                   </div>
                   <p className="fs-7 text-dark dark:text-white text-opacity-70">
                     Not sure which class is right for you?{" "}
-                    <Link href="/contact" className="uc-link fw-bold">
+                    <BookingButton className="uc-link fw-bold">
                       Get in touch
-                    </Link>{" "}
+                    </BookingButton>{" "}
                     and we&apos;ll help you find the best fit.
                   </p>
                 </div>
@@ -208,11 +206,11 @@ export default function LadiesTaekwondoMaidenheadPage() {
                       },
                       {
                         q: "Are the classes really taught by female instructors?",
-                        a: "Yes — all of our ladies-only classes are taught exclusively by experienced female instructors who are registered with British Taekwondo, World Taekwondo, and Kukkiwon. They are fully insured and DBS checked.",
+                        a: "Yes. All of our ladies-only classes are taught exclusively by experienced female instructors who are registered with British Taekwondo, World Taekwondo, and Kukkiwon. They are fully insured and DBS checked.",
                       },
                       {
                         q: "What should I wear to my first class?",
-                        a: "Just wear something comfortable you can move in — leggings and a t-shirt are perfect. When you join, we provide a free uniform (dobok). No special footwear is needed as taekwondo is practised barefoot.",
+                        a: "Just wear something comfortable you can move in; leggings and a t-shirt are perfect. When you join, we provide a free uniform (dobok). No special footwear is needed as taekwondo is practised barefoot.",
                       },
                       {
                         q: "Is the ladies-only class suitable for all ages?",
@@ -247,10 +245,6 @@ export default function LadiesTaekwondoMaidenheadPage() {
                 &bull;{" "}
                 <Link href="/windsor-taekwondo" className="uc-link fw-bold">
                   Taekwondo classes in Windsor
-                </Link>{" "}
-                &bull;{" "}
-                <Link href="/benefits-of-taekwondo" className="uc-link fw-bold">
-                  Benefits of taekwondo
                 </Link>
               </p>
             </div>

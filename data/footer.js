@@ -4,7 +4,6 @@ export const footerLinks = [
       { href: "/maidenhead-taekwondo", label: "Taekwondo in Maidenhead" },
       { href: "/windsor-taekwondo", label: "Taekwondo in Windsor" },
       { href: "/maidenhead-ladies-taekwondo", label: "Ladies-Only Classes" },
-      { href: "/benefits-of-taekwondo", label: "Benefits of Taekwondo" },
     ],
   },
   {

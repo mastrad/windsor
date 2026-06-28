@@ -2,9 +2,10 @@ import Header2 from "@/components/headers/Header2";
 import Footer1 from "@/components/footers/Footer1";
 import Cta from "@/components/homes/home-2/Cta";
 import Link from "next/link";
+import BookingButton from "@/components/common/BookingButton";
 
 export const metadata = {
-  title: "Taekwondo Classes in Maidenhead | Windsor Taekwondo — Martial Arts Maidenhead",
+  title: "Taekwondo Classes in Maidenhead | Windsor Taekwondo | Martial Arts Maidenhead",
   description:
     "Windsor Taekwondo offers taekwondo and martial arts classes in Maidenhead for kids, adults, and ladies-only groups. Located at 4 Marlow Rd, Maidenhead SL6 7YR. Book a free trial today.",
   keywords:
@@ -20,7 +21,7 @@ export const metadata = {
         url: "https://windsortaekwondo.com/assets/images/template/hero-two.png",
         width: 1280,
         height: 941,
-        alt: "Taekwondo classes in Maidenhead — Windsor Taekwondo",
+        alt: "Taekwondo classes in Maidenhead, Windsor Taekwondo",
       },
     ],
     type: "website",
@@ -55,15 +56,12 @@ export default function TaekwondoMaidenheadPage() {
                     Taekwondo Classes in Maidenhead
                   </h1>
                   <p className="fs-6 sm:fs-5 text-dark dark:text-white text-opacity-70 max-w-650px">
-                    Kids, adults, and ladies-only taekwondo and martial arts classes in Maidenhead. All ages, all abilities — beginners always welcome.
+                    Kids, adults, and ladies-only taekwondo and martial arts classes in Maidenhead. All ages, all abilities. Beginners always welcome.
                   </p>
                   <div className="hstack gap-2 flex-wrap justify-center">
-                    <Link
-                      href="/contact"
-                      className="btn btn-md h-48px lg:h-56px btn-primary text-white"
-                    >
+                    <BookingButton className="btn btn-md h-48px lg:h-56px btn-primary text-white">
                       Book a free class
-                    </Link>
+                    </BookingButton>
                     <Link
                       href="/about"
                       className="btn btn-md h-48px lg:h-56px btn-secondary dark:btn-outline-white"
@@ -72,7 +70,7 @@ export default function TaekwondoMaidenheadPage() {
                     </Link>
                   </div>
                   <p className="fs-7 text-dark dark:text-white text-opacity-70">
-                    Free trial class — no payment or uniform required.
+                    No payment or uniform required.
                   </p>
                 </div>
               </div>
@@ -94,7 +92,7 @@ export default function TaekwondoMaidenheadPage() {
                       Windsor Taekwondo is Maidenhead&apos;s premier martial arts club, offering <strong>taekwondo classes in Maidenhead</strong> for children (4+), adults, and women-only groups. We are based at <strong>4 Marlow Rd, Maidenhead SL6 7YR</strong>, making us centrally located and easily accessible from across Maidenhead and the surrounding areas.
                     </p>
                     <p>
-                      Our <strong>martial arts classes in Maidenhead</strong> are run by expert instructors registered with British Taekwondo, World Taekwondo, and Kukkiwon. Whether you&apos;re brand new to martial arts or looking to continue your training, we have a class that fits your goals — fitness, self-defence, competition, or simply something fun to do with the family.
+                      Our <strong>martial arts classes in Maidenhead</strong> are run by expert instructors registered with British Taekwondo, World Taekwondo, and Kukkiwon. Whether you&apos;re brand new to martial arts or looking to continue your training, we have a class that fits your goals: fitness, self-defence, competition, or simply something fun to do with the family.
                     </p>
                     <p>
                       As the number one choice for <strong>Maidenhead taekwondo</strong>, we pride ourselves on a welcoming, family-friendly club where every member is supported from their very first class.
@@ -126,17 +124,17 @@ export default function TaekwondoMaidenheadPage() {
                     },
                     {
                       title: "Adults & Mixed Classes",
-                      desc: "For adults of all levels — from complete beginners to experienced practitioners. Train alongside a motivated community and progress through the belt system at your own pace.",
+                      desc: "For adults of all levels, from complete beginners to experienced practitioners. Train alongside a motivated community and progress through the belt system at your own pace.",
                     },
                   ].map((item, i) => (
                     <div key={i}>
                       <div className="panel vstack gap-2 p-4 lg:py-6 rounded-2 bg-white dark:bg-gray-900 h-100">
                         <h3 className="h5 lg:h4 m-0">{item.title}</h3>
                         <p className="fs-6 opacity-70 dark:opacity-80">{item.desc}</p>
-                        <Link href="/contact" className="uc-link fw-bold hstack gap-narrow mt-auto">
+                        <BookingButton className="uc-link fw-bold hstack gap-narrow mt-auto">
                           <span>Book a free trial</span>
                           <i className="icon icon-1 unicon-arrow-right" />
-                        </Link>
+                        </BookingButton>
                       </div>
                     </div>
                   ))}
@@ -189,9 +187,9 @@ export default function TaekwondoMaidenheadPage() {
                         ))}
                       </ul>
                     </div>
-                    <Link href="/contact" className="btn btn-primary text-white btn-md w-fit">
+                    <BookingButton className="btn btn-primary text-white btn-md w-fit">
                       Book your free class
-                    </Link>
+                    </BookingButton>
                   </div>
                 </div>
               </div>
@@ -211,10 +209,6 @@ export default function TaekwondoMaidenheadPage() {
                 &bull;{" "}
                 <Link href="/windsor-taekwondo" className="uc-link fw-bold">
                   Taekwondo classes in Windsor
-                </Link>{" "}
-                &bull;{" "}
-                <Link href="/benefits-of-taekwondo" className="uc-link fw-bold">
-                  Benefits of taekwondo
                 </Link>
               </p>
             </div>

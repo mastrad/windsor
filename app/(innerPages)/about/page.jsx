@@ -27,7 +27,7 @@ export const metadata = {
           url: "https://windsortaekwondo.com/assets/images/template/hero-about-02.webp",
           width: 1000,
           height: 667,
-          alt: "Windsor Taekwondo club — about us",
+          alt: "Windsor Taekwondo club, about us",
         },
       ],
       type: "website",

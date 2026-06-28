@@ -1,4 +1,5 @@
 User-agent: *
+Disallow: /benefits-of-taekwondo
 Disallow: /page-integrations
 Disallow: /coming-soon
 Disallow: /pageDefault

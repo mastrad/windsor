@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import TurnstileWidget from "@/components/TurnstileWidget";
 
 export default function Contact1() {
   const [formData, setFormData] = useState({
@@ -9,7 +10,10 @@ export default function Contact1() {
     subject: "",
     message: "",
   });
-  const [status, setStatus] = useState(""); // Initial status is empty
+  const [status, setStatus] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState(null);
+  const [turnstileAvailable, setTurnstileAvailable] = useState(true);
+  const [turnstileKey, setTurnstileKey] = useState(0);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,23 +27,24 @@ export default function Contact1() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, turnstileToken }),
       });
 
       if (res.ok) {
-        // Success case
         setStatus("Thank you! We have received your message.");
-        setFormData({ name: "", email: "", subject: "", message: "" }); // Clear form
+        setFormData({ name: "", email: "", subject: "", message: "" });
+        setTurnstileToken(null);
+        setTurnstileKey((k) => k + 1);
       } else {
-        // API returned an error (e.g., 400 or 500)
         const data = await res.json();
         setStatus(data.error || "Error sending message. Please try again.");
       }
     } catch (error) {
-      // Network or fetch error
       setStatus("Error sending message. Please try again.");
     }
   };
+
+  const canSubmit = !!turnstileToken || !turnstileAvailable;
 
   return (
     <div id="hero_header" className="hero-header section panel overflow-hidden">
@@ -76,7 +81,7 @@ export default function Contact1() {
                       <div className="panel z-1">
                         <div className="vstack gap-3">
                           <p className="fs-5 xl:fs-4 fw-medium">
-                            “Great teacher, great knowledge - very engaging and fun class!”
+                            "Great teacher, great knowledge - very engaging and fun class!"
                           </p>
                           <div className="vstack gap-0">
                             <p className="fs-6 lg:fs-5 fw-medium">
@@ -106,7 +111,22 @@ export default function Contact1() {
                     </div>
                     <input className="form-control h-48px w-full" type="text" name="subject" placeholder="Reason for contact*" required value={formData.subject} onChange={handleChange} />
                     <textarea className="form-control min-h-150px w-full" name="message" placeholder="Your message..*" required value={formData.message} onChange={handleChange} />
-                    <button className="btn btn-primary btn-md text-white mt-2" type="submit">Send message</button>
+                    <div className="d-flex justify-content-center mt-1">
+                      <TurnstileWidget
+                        key={turnstileKey}
+                        onVerify={(token) => setTurnstileToken(token)}
+                        onExpire={() => setTurnstileToken(null)}
+                        onError={() => setTurnstileToken(null)}
+                        onUnavailable={() => setTurnstileAvailable(false)}
+                        theme="light"
+                      />
+                    </div>
+                    {!turnstileAvailable && (
+                      <p className="fs-7 opacity-70 text-center">
+                        Security check unavailable. You can still submit the form.
+                      </p>
+                    )}
+                    <button className="btn btn-primary btn-md text-white mt-2" type="submit" disabled={!canSubmit}>Send message</button>
                     {status && (
                         <p
                             className="text-center mt-2"

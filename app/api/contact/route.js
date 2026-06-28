@@ -1,15 +1,10 @@
 import { NextResponse } from "next/server";
 import { ServerClient } from "postmark";
 
-const client = new ServerClient(process.env.POSTMARK_API_KEY);
-
 export async function POST(req) {
   try {
-
-    console.log("Postmark API Key:", process.env.POSTMARK_API_KEY);
+    const client = new ServerClient(process.env.POSTMARK_API_KEY);
     const { name, email, subject, message } = await req.json();
-
-    console.log("Received form data:", { name, email, subject, message });
 
     // Validate fields
     if (!name || !email || !message) {

@@ -1,5 +1,6 @@
 import { ServerClient } from "postmark";
 import { NextResponse } from "next/server";
+import { getClientIp, getRateLimiter, verifyTurnstile } from "@/utlis/formSecurity";
 
 function escapeHtml(str) {
   if (!str) return "";
@@ -11,26 +12,22 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
-async function verifyTurnstile(token) {
-  if (!token) return false;
-  try {
-    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        secret: process.env.TURNSTILE_SECRET_KEY,
-        response: token,
-      }),
-    });
-    const data = await res.json();
-    return data.success === true;
-  } catch {
-    return false;
-  }
-}
+const ratelimit = getRateLimiter("demo-request", 2, "10 m");
 
 export async function POST(request) {
   try {
+    const ip = getClientIp(request);
+
+    if (ratelimit) {
+      const { success } = await ratelimit.limit(ip);
+      if (!success) {
+        return NextResponse.json(
+          { error: "Too many requests. Please try again later." },
+          { status: 429 }
+        );
+      }
+    }
+
     const body = await request.json();
     const { name, dateOfBirth, email, phone, message, turnstileToken } = body;
 
@@ -41,7 +38,7 @@ export async function POST(request) {
       );
     }
 
-    const turnstileOk = await verifyTurnstile(turnstileToken);
+    const turnstileOk = await verifyTurnstile(turnstileToken, ip);
     if (!turnstileOk) {
       return NextResponse.json(
         { error: "Security check failed. Please refresh and try again." },

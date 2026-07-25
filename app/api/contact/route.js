@@ -1,20 +1,19 @@
 import { NextResponse } from "next/server";
-import { ServerClient } from "postmark";
 import { checkRateLimit, getClientIp, verifyTurnstile } from "@/utlis/formSecurity";
+import { submitToGoogleForm } from "@/utlis/googleForms";
 
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
+// Windsor TKD - Contact Form. Field IDs come from the form's pre-filled link.
+const FORM_ID =
+  "1FAIpQLSd9nZuxQiZvRcLpSgE0WZHD_L4jjbHfwUAtL4NMQ0qJeCwnGw";
+const FIELD = {
+  name: "entry.1148927156",
+  email: "entry.1435747053",
+  subject: "entry.1597742699",
+  message: "entry.636337236",
+};
 
 export async function POST(req) {
   try {
-    const client = new ServerClient(process.env.POSTMARK_API_KEY);
     const ip = getClientIp(req);
 
     if (!(await checkRateLimit("contact", 3, "10 m", ip))) {
@@ -38,18 +37,11 @@ export async function POST(req) {
       );
     }
 
-    const safeName = escapeHtml(name);
-    const safeEmail = escapeHtml(email);
-    const safeSubject = escapeHtml(subject);
-    const safeMessage = escapeHtml(message);
-
-    await client.sendEmail({
-      From: "hello@windsortaekwondo.com",
-      To: "hello@windsortaekwondo.com",
-      Subject: `New Contact Form Submission: ${safeSubject || "No Subject"}`,
-      HtmlBody: `<p><strong>Name:</strong> ${safeName}</p><p><strong>Email:</strong> ${safeEmail}</p><p><strong>Message:</strong> ${safeMessage}</p>`,
-      TextBody: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
-      ReplyTo: email,
+    await submitToGoogleForm(FORM_ID, {
+      [FIELD.name]: name,
+      [FIELD.email]: email,
+      [FIELD.subject]: subject,
+      [FIELD.message]: message,
     });
 
     return NextResponse.json({ success: true }, { status: 200 });

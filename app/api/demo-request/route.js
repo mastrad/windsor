@@ -1,16 +1,19 @@
-import { ServerClient } from "postmark";
 import { NextResponse } from "next/server";
 import { checkRateLimit, getClientIp, verifyTurnstile } from "@/utlis/formSecurity";
+import { submitToGoogleForm } from "@/utlis/googleForms";
 
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
+// Windsor TKD - Free Trial Requests. This form was duplicated from the contact
+// form, so it reuses the same entry IDs for different questions - note that
+// entry.636337236 is the email here, not the message.
+const FORM_ID =
+  "1FAIpQLSed17AO1_SQ-Gsf32SITkLUpc1EOCCdNF71X4jtH22O3CPlZw";
+const FIELD = {
+  name: "entry.1148927156",
+  dateOfBirth: "entry.1435747053",
+  phone: "entry.1597742699",
+  email: "entry.636337236",
+  message: "entry.433108754",
+};
 
 export async function POST(request) {
   try {
@@ -41,38 +44,12 @@ export async function POST(request) {
       );
     }
 
-    const apiKey = process.env.POSTMARK_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: "Server configuration error" },
-        { status: 500 }
-      );
-    }
-
-    const client = new ServerClient(apiKey);
-
-    const safeName = escapeHtml(name);
-    const safePhone = escapeHtml(phone);
-    const safeEmail = escapeHtml(email);
-    const safeDob = escapeHtml(dateOfBirth);
-    const safeMessage = escapeHtml(message);
-
-    const emailContent = `
-      <h2>New Free Trial Request</h2>
-      <p><strong>Name:</strong> ${safeName}</p>
-      <p><strong>Phone:</strong> ${safePhone}</p>
-      <p><strong>Email:</strong> ${safeEmail}</p>
-      ${safeDob ? `<p><strong>Date of Birth:</strong> ${safeDob}</p>` : ""}
-      ${safeMessage ? `<p><strong>Message:</strong> ${safeMessage}</p>` : ""}
-    `;
-
-    await client.sendEmail({
-      From: process.env.FROM_EMAIL || "hello@windsortaekwondo.com",
-      To: process.env.TO_EMAIL || "hello@windsortaekwondo.com",
-      Subject: `Free Trial Request from ${safeName}`,
-      HtmlBody: emailContent,
-      TextBody: `New Free Trial Request\nName: ${name}\nPhone: ${phone}\nEmail: ${email}\nDate of Birth: ${dateOfBirth}\nMessage: ${message || ""}`,
-      ReplyTo: email,
+    await submitToGoogleForm(FORM_ID, {
+      [FIELD.name]: name,
+      [FIELD.dateOfBirth]: dateOfBirth,
+      [FIELD.phone]: phone,
+      [FIELD.email]: email,
+      [FIELD.message]: message,
     });
 
     return NextResponse.json({ success: true });

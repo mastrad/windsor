@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { ServerClient } from "postmark";
-import { getClientIp, getRateLimiter, verifyTurnstile } from "@/utlis/formSecurity";
+import { checkRateLimit, getClientIp, verifyTurnstile } from "@/utlis/formSecurity";
 
 function escapeHtml(str) {
   if (!str) return "";
@@ -12,21 +12,16 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
-const ratelimit = getRateLimiter("contact", 3, "10 m");
-
 export async function POST(req) {
   try {
     const client = new ServerClient(process.env.POSTMARK_API_KEY);
     const ip = getClientIp(req);
 
-    if (ratelimit) {
-      const { success } = await ratelimit.limit(ip);
-      if (!success) {
-        return NextResponse.json(
-          { error: "Too many requests. Please try again later." },
-          { status: 429 }
-        );
-      }
+    if (!(await checkRateLimit("contact", 3, "10 m", ip))) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
     }
 
     const { name, email, subject, message, turnstileToken } = await req.json();

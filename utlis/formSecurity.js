@@ -49,6 +49,36 @@ export function getRateLimiter(prefix, limit, window) {
 }
 
 /**
+ * Checks the rate limit for `ip`, returning true if the request may proceed.
+ *
+ * The limiter is built lazily on first use rather than at module scope, so
+ * importing a route never opens a Redis connection at build time. Redis
+ * problems must never take the forms down, so this fails open: if Upstash is
+ * unconfigured, errors, or doesn't answer within `timeoutMs`, the request is
+ * allowed through (Turnstile still guards it).
+ */
+export async function checkRateLimit(prefix, limit, window, ip, timeoutMs = 1500) {
+  let ratelimit;
+  try {
+    ratelimit = getRateLimiter(prefix, limit, window);
+  } catch {
+    return true;
+  }
+  if (!ratelimit) return true;
+
+  try {
+    const result = await Promise.race([
+      ratelimit.limit(ip),
+      new Promise((resolve) => setTimeout(() => resolve(null), timeoutMs)),
+    ]);
+    // null = timed out; treat as allowed rather than stalling the submission.
+    return result ? result.success : true;
+  } catch {
+    return true;
+  }
+}
+
+/**
  * Verifies a Cloudflare Turnstile token server-side.
  * If TURNSTILE_SECRET_KEY isn't configured, verification is skipped (returns true)
  * so forms keep working before Turnstile is set up.

@@ -1,6 +1,6 @@
 import { ServerClient } from "postmark";
 import { NextResponse } from "next/server";
-import { getClientIp, getRateLimiter, verifyTurnstile } from "@/utlis/formSecurity";
+import { checkRateLimit, getClientIp, verifyTurnstile } from "@/utlis/formSecurity";
 
 function escapeHtml(str) {
   if (!str) return "";
@@ -12,20 +12,15 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
-const ratelimit = getRateLimiter("demo-request", 2, "10 m");
-
 export async function POST(request) {
   try {
     const ip = getClientIp(request);
 
-    if (ratelimit) {
-      const { success } = await ratelimit.limit(ip);
-      if (!success) {
-        return NextResponse.json(
-          { error: "Too many requests. Please try again later." },
-          { status: 429 }
-        );
-      }
+    if (!(await checkRateLimit("demo-request", 2, "10 m", ip))) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
     }
 
     const body = await request.json();

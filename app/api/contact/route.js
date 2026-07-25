@@ -46,6 +46,8 @@ export async function POST(req) {
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
+    // Server-side only - the client still gets a generic message.
+    console.error("[contact] submission failed:", error?.message || error);
     return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
   }
 }

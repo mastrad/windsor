@@ -54,6 +54,8 @@ export async function POST(request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    // Server-side only - the client still gets a generic message.
+    console.error("[demo-request] submission failed:", error?.message || error);
     return NextResponse.json(
       { error: "Failed to send trial request. Please try again." },
       { status: 500 }

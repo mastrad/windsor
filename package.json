@@ -9,8 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@upstash/ratelimit": "^2.0.8",
-    "@upstash/redis": "^1.38.0",
     "animejs": "^3.2.2",
     "imagesloaded": "^5.0.0",
     "isotope-layout": "^3.0.6",

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { ServerClient } from "postmark";
-import { getClientIp, getRateLimiter, verifyTurnstile } from "@/utlis/formSecurity";
 
 function escapeHtml(str) {
   if (!str) return "";
@@ -12,30 +11,34 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
-const ratelimit = getRateLimiter("contact", 3, "10 m");
+async function verifyTurnstile(token) {
+  if (!token) return false;
+  try {
+    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        secret: process.env.TURNSTILE_SECRET_KEY,
+        response: token,
+      }),
+    });
+    const data = await res.json();
+    return data.success === true;
+  } catch {
+    return false;
+  }
+}
 
 export async function POST(req) {
   try {
     const client = new ServerClient(process.env.POSTMARK_API_KEY);
-    const ip = getClientIp(req);
-
-    if (ratelimit) {
-      const { success } = await ratelimit.limit(ip);
-      if (!success) {
-        return NextResponse.json(
-          { error: "Too many requests. Please try again later." },
-          { status: 429 }
-        );
-      }
-    }
-
     const { name, email, subject, message, turnstileToken } = await req.json();
 
     if (!name || !email || !message) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const turnstileOk = await verifyTurnstile(turnstileToken, ip);
+    const turnstileOk = await verifyTurnstile(turnstileToken);
     if (!turnstileOk) {
       return NextResponse.json(
         { error: "Security check failed. Please refresh and try again." },

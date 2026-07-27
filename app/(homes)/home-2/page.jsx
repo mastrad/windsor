@@ -7,7 +7,6 @@ import Features from "@/components/homes/home-2/Features";
 import Feedback from "@/components/homes/home-2/Feedback";
 import Hero from "@/components/homes/home-2/Hero";
 import KeyFeatures from "@/components/homes/home-2/KeyFeatures";
-import Pricing from "@/components/common/Pricing";
 import React from "react";
 export const metadata = {
   title:
@@ -54,7 +53,6 @@ export default function HomePage2() {
           <Hero />
           <Features />
           <KeyFeatures />
-          {/* <Pricing /> */}
           <br />
           <br />
           <Faq />

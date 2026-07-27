@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-This is the marketing site for **Windsor Taekwondo** (windsortaekwondo.com), built on Next.js (App Router, v16, React 19). The codebase originated from the "Lexend" multi-demo SaaS Themeforest template — most of `components/homes/home-1` through `home-10` and all of `components/shop/*` are unused template demo variants kept for reference/reuse, not part of the live site.
+This is the marketing site for **Windsor Taekwondo** (windsortaekwondo.com), built on Next.js (App Router, v15, React 19). The codebase originated from the "Lexend" multi-demo SaaS Themeforest template — most of `components/homes/home-1` through `home-10` and all of `components/shop/*` are unused template demo variants kept for reference/reuse, not part of the live site.
 
 ## Commands
 
@@ -31,30 +31,33 @@ Only a subset of the template is actually wired up:
 
 - `@/*` maps to the project root (`jsconfig.json`).
 - No Tailwind config — styling is SCSS-based, entry point `public/assets/css/main.scss` plus `public/assets/custom.scss`, imported globally in `app/layout.js`. Utility-looking class names (e.g. `bg-white`, `dark:bg-gray-900`) come from the theme's own SCSS utilities, not Tailwind.
-- `next.config.mjs` sets `images.unoptimized: true`.
+- `next.config.mjs` sets `images.unoptimized: true`, disables `poweredByHeader`, and defines the site's security headers / Content-Security-Policy (see security notes).
 
 ## API routes (`app/api/*`)
 
-All routes are server-side handlers using **Postmark** for email:
+There are exactly two, and neither sends email. Both post to a **Google Form** via `utlis/googleForms.js` (`submitToGoogleForm`) — the form's public `formResponse` endpoint, so no Google credential is involved:
 
-- `contact/route.js` — simple contact form → email to `hello@windsortaekwondo.com`.
-- `demo-request/route.js` — free-trial/demo form. Includes: Upstash Redis-based rate limiting (2 req/IP/10min), Cloudflare Turnstile verification, HTML-escaping of all user input before building the email body.
-- `send-verification-email/route.js` / `verify-email/route.js` — JWT-based email verification flow (note: these reference `spotwizz.com` branding/URLs — also template leftovers from a sibling project; verify before relying on them for the Windsor site).
+- `contact/route.js` — contact form (3 req/IP/10min).
+- `demo-request/route.js` — free-trial/booking form (2 req/IP/10min).
 
-When adding new form/contact endpoints, follow the `demo-request` pattern: rate-limit, Turnstile verification, `escapeHtml` on all interpolated values, secrets read from `process.env` with a fail-fast check.
+Both follow the same shape, and new form endpoints should too: `getProtectionStatus()` guard → `checkRateLimit()` → `normalizeField()` with a cap from `FIELD_LIMITS` → required-field and `isValidEmail()` checks → `verifyTurnstile()` → `submitToGoogleForm()`. All those helpers live in `utlis/formSecurity.js`. `escapeHtml()` is still exported there but is currently unused (it existed for the removed Postmark HTML email bodies) — use it if you ever interpolate user input into markup.
 
 ### Required environment variables
 
-- `POSTMARK_API_KEY` — required by all email-sending routes
-- `FROM_EMAIL`, `TO_EMAIL`, `FROM_NAME` — optional overrides for sender/recipient
-- `JWT_SECRET` — used by the email verification routes
 - `TURNSTILE_SECRET_KEY` (server) / `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (client) — Cloudflare Turnstile
 - `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` — used implicitly by `Redis.fromEnv()` for rate limiting
-- `NEXT_PUBLIC_GTM_ID` — optional Google Tag Manager
-- `NEXT_PUBLIC_BASE_URL` — base URL used in verification email links
+- `NEXT_PUBLIC_GTM_ID` — optional Google Tag Manager (see security notes below)
+
+At least one of Turnstile or Upstash must be configured or both form endpoints return 503 by design. `POSTMARK_API_KEY`, `FROM_EMAIL`, `TO_EMAIL`, `FROM_NAME`, `JWT_SECRET` and `NEXT_PUBLIC_BASE_URL` are no longer used by any code path — the `postmark` and `jsonwebtoken` packages have been removed along with the mail-relay routes.
 
 No `.env.example` exists in the repo — check with whoever manages deployment for current values.
 
-## Security note
+## Security notes
 
-`package.json` previously contained a malicious `nohup /var/tmp/.font/n0de ...` prefix injected into the `dev`/`start` scripts (present since the template's initial upload commit) — a hidden background-process dropper. This has been removed from `dev`. If you encounter this pattern again in this repo or in sibling Lexend-template-based projects (e.g. `spotwizz.com`, `Spotwizz LANDING`), strip it immediately and flag it.
+**Malicious npm script (removed).** `package.json` previously contained a malicious `nohup /var/tmp/.font/n0de ...` prefix injected into the `dev`/`start` scripts (present since the template's initial upload commit) — a hidden background-process dropper. This has been removed. If you encounter this pattern again in this repo or in sibling Lexend-template-based projects (e.g. `spotwizz.com`, `Spotwizz LANDING`), strip it immediately and flag it.
+
+**Do not reintroduce `/api/send-verification-email`.** That route was an unauthenticated Postmark mail relay (part of a leftover Spotwizz signup flow) that was abused to send bulk spam. It has now been deleted three times — twice because a merge silently brought it back (`c2a6074`, then `6b45a89`). If it, `/api/verify-email`, `app/(othersPages)/email-verification/`, or `components/otherPages/EmailVerificationForm.jsx` reappear in a diff, that is a regression, not a feature. Nothing on the live site links to any of them.
+
+**Content-Security-Policy lives in `next.config.mjs`.** It exists because a third-party iframe (`alpaca.markets`) was observed rendering a full-page overlay on `/maidenhead-taekwondo` — content that appears nowhere in this repo, so it was injected at runtime (GTM container, hosting layer, or client). `frame-src` is the directive that blocks it. When adding a legitimate third-party tool, add its host to the specific directive it needs; never widen a directive to `*` or add `'unsafe-eval'` in production. GTM is the only place in the app where arbitrary third-party HTML/JS can appear without a code change — treat the container ID (`NEXT_PUBLIC_GTM_ID`) as security-relevant config and verify it belongs to this site.
+
+**Form endpoints fail closed when unprotected.** `/api/contact` and `/api/demo-request` return 503 if *neither* Upstash rate limiting nor Turnstile is configured (see `getProtectionStatus()` in `utlis/formSecurity.js`). Each control still fails open individually — that's deliberate — but a deploy missing both env vars is a misconfiguration that should be loud, not a silently open relay.

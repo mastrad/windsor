@@ -1,14 +1,14 @@
 import Header2 from "@/components/headers/Header2";
 
-import Footer2 from "@/components/footers/Footer2";
+import Footer1 from "@/components/footers/Footer1";
 import Breadcumb from "@/components/otherPages/Breadcumb";
 import Notfound from "@/components/otherPages/404";
 export const metadata = {
-    title:
-      "Not Found || Spotwizz - Fully featured CRM to manage invoices, clients, projects, taks, and more.",
-    description:
-      "Spotwizz - Fully featured CRM to manage invoices, clients, projects, taks, and more.",
-  };
+  title: "Page Not Found | Windsor Taekwondo",
+  description:
+    "The page you were looking for could not be found. Windsor Taekwondo offers taekwondo and martial arts classes for kids, adults, and ladies-only groups in Windsor and Maidenhead.",
+  robots: { index: false, follow: true },
+};
 export default function NotFoundPage() {
   return (
     <>
@@ -18,7 +18,7 @@ export default function NotFoundPage() {
           <Breadcumb />
           <Notfound />
         </div>
-        <Footer2 />
+        <Footer1 />
       </div>
     </>
   );

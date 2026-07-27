@@ -1,5 +1,14 @@
 import { NextResponse } from "next/server";
-import { checkRateLimit, getClientIp, verifyTurnstile } from "@/utlis/formSecurity";
+import {
+  FIELD_LIMITS,
+  checkRateLimit,
+  findOversizedField,
+  getClientIp,
+  getProtectionStatus,
+  isValidEmail,
+  normalizeField,
+  verifyTurnstile,
+} from "@/utlis/formSecurity";
 import { submitToGoogleForm } from "@/utlis/googleForms";
 
 // Windsor TKD - Free Trial Requests. This form was duplicated from the contact
@@ -17,6 +26,16 @@ const FIELD = {
 
 export async function POST(request) {
   try {
+    // Both abuse controls fail open individually. If neither one is configured
+    // this endpoint would forward anything to anyone, so refuse rather than
+    // run unprotected - getProtectionStatus() logs which one is missing.
+    if (!getProtectionStatus().any) {
+      return NextResponse.json(
+        { error: "This form is temporarily unavailable. Please email us instead." },
+        { status: 503 }
+      );
+    }
+
     const ip = getClientIp(request);
 
     if (!(await checkRateLimit("demo-request", 2, "10 m", ip))) {
@@ -27,11 +46,40 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { name, dateOfBirth, email, phone, message, turnstileToken } = body;
+    const { turnstileToken } = body;
+
+    const name = normalizeField(body.name);
+    const dateOfBirth = normalizeField(body.dateOfBirth);
+    const email = normalizeField(body.email);
+    const phone = normalizeField(body.phone);
+    const message = normalizeField(body.message);
 
     if (!name || !email || !phone || !dateOfBirth) {
       return NextResponse.json(
         { error: "Required fields are missing" },
+        { status: 400 }
+      );
+    }
+
+    const oversized = findOversizedField({
+      name,
+      dateOfBirth,
+      email,
+      phone,
+      message,
+    });
+    if (oversized) {
+      return NextResponse.json(
+        {
+          error: `That ${oversized === "dateOfBirth" ? "date of birth" : oversized} is too long (maximum ${FIELD_LIMITS[oversized]} characters).`,
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!isValidEmail(email)) {
+      return NextResponse.json(
+        { error: "Please enter a valid email address." },
         { status: 400 }
       );
     }
